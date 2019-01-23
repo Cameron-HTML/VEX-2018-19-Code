@@ -195,7 +195,7 @@ typedef struct PID_d {
       }
 
       // Calculate error
-      error = requestedValue - currentSensorValue;
+      error = currentSensorValue - requestedValue;
 
       // Check if 'kI' is not equal to '0'
       if(kI != 0) {
