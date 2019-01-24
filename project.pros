@@ -1,7 +1,7 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "Cameron",
+        "project_name": "Default",
         "target": "v5",
         "templates": {
             "kernel": {
