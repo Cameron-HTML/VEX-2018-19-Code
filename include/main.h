@@ -261,10 +261,6 @@ typedef struct twoBar_d {
 */
 
 typedef struct vision_d {
-  #define BLUE_SIG 1
-  #define RED_SIG 2
-  #define GREEN_SIG 3
-
   // 'trackingEnabled' variable
   bool trackingEnabled = false;
 
@@ -345,37 +341,7 @@ inline void flipPID(void* mainContainer_p) {
 
 inline void tracking(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
-
-  // Enter loop
   while(true) {
-    if(mainContainerPtr->LCD.auton <= 1) {
-      //BLUE
-      objVec[0] = visionSensor.get_by_sig(0, 1);
-    } else {
-      //RED
-      objVec[0] = visionSensor.get_by_sig(0, 2);
-    }
-
-    //GREEN
-    objVec[1] = visionSensor.get_by_sig(0, 3);
-
-    if(mainContainerPtr->vision.trackingEnabled) {
-      if(visionSensor.get_object_count() > 1) {
-        if(objVec[0].x_middle_coord < mainContainerPtr->vision.screenMiddleX - 5) {
-          leftFrontDriveMotor.move(mainContainerPtr->vision.speed);
-              leftBackDriveMotor.move(mainContainerPtr->vision.speed);
-              rightFrontDriveMotor.move(-mainContainerPtr->vision.speed);
-              rightBackDriveMotor.move(-mainContainerPtr->vision.speed);
-            } else if(objVec[0].x_middle_coord > mainContainerPtr->vision.screenMiddleX + 5) {
-              leftFrontDriveMotor.move(-mainContainerPtr->vision.speed);
-              leftBackDriveMotor.move(-mainContainerPtr->vision.speed);
-              rightFrontDriveMotor.move(mainContainerPtr->vision.speed);
-              rightBackDriveMotor.move(mainContainerPtr->vision.speed);
-            } else {
-              mainContainerPtr->vision.trackingEnabled = false;
-            }
-          }
-        }
     delay(20);
   }
 }
