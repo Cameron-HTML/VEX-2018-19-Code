@@ -15,20 +15,9 @@
  */
 
 void opcontrol() {
-	bool reversed = true;
+	bool reversed = false;
 	bool brake = false;
 	while(true) {
-
-		if(master.get_digital(E_CONTROLLER_DIGITAL_A)) {
-
-			while(master.get_digital(E_CONTROLLER_DIGITAL_A)) delay(20);
-
-			if(mainContainer.vision.trackingEnabled) {
-				mainContainer.vision.trackingEnabled = false;
-			} else {
-				mainContainer.vision.trackingEnabled = false;
-			}
-		}
 
 		if(abs(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) >= 15 || abs(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)) >= 15) {
 			if(reversed) {
