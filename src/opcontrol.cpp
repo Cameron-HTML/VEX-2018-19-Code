@@ -15,10 +15,12 @@
  */
 
 void opcontrol() {
+	// Init variables
 	bool reversed = false;
 	bool brake = false;
 	while(true) {
 
+		// Joystick thresh-hold
 		if(abs(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) >= 15 || abs(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)) >= 15) {
 			if(reversed) {
 				leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
@@ -38,6 +40,17 @@ void opcontrol() {
 			rightBackDriveMotor.move(0);
 		}
 
+		// Brake system
+		if(master.get_digital(E_CONTROLLER_DIGITAL_DOWN)) {
+			if(brake) {
+				brake = false;
+			} else {
+				brake = true;
+			}
+
+			while(master.get_digital(E_CONTROLLER_DIGITAL_DOWN)) delay(20);
+		}
+
 		if(brake) {
 			leftFrontDriveMotor.set_brake_mode(E_MOTOR_BRAKE_BRAKE);
 			leftBackDriveMotor.set_brake_mode(E_MOTOR_BRAKE_BRAKE);
@@ -50,16 +63,7 @@ void opcontrol() {
 			rightBackDriveMotor.set_brake_mode(E_MOTOR_BRAKE_COAST);
 		}
 
-		if(master.get_digital(E_CONTROLLER_DIGITAL_DOWN)) {
-			if(brake) {
-				brake = false;
-			} else {
-				brake = true;
-			}
-
-			while(master.get_digital(E_CONTROLLER_DIGITAL_DOWN)) delay(20);
-		}
-
+		// Control 'front' of robot
 		if(master.get_digital(E_CONTROLLER_DIGITAL_UP)) {
  			if(reversed) {
 				reversed = false;
@@ -78,6 +82,7 @@ void opcontrol() {
 			while(master.get_digital(E_CONTROLLER_DIGITAL_UP)) delay(20);
 		}
 
+		// Flywheel contol
 		if(master.get_digital(E_CONTROLLER_DIGITAL_R1)) {
 			if(mainContainer.flyWheel.PID.PIDRunning == true) {
 				mainContainer.flyWheel.PID.PIDRunning = false;
@@ -88,15 +93,30 @@ void opcontrol() {
 			while(master.get_digital(E_CONTROLLER_DIGITAL_R1)) delay(20);
 		}
 
-		if(master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
+		// Intake/indexer control
+		if(master.get_digital(E_CONTROLLER_DIGITAL_L1) && master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
+			intakeMotor.move(-127);
+			indexerMotor.move(-127);
+		}	else if(master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
 			intakeMotor.move(127);
+			indexerMotor.move(127);
 		} else if(master.get_digital(E_CONTROLLER_DIGITAL_L1)) {
 			intakeMotor.move(-127);
 		} else {
 			intakeMotor.move(0);
+			indexerMotor.move(0);
 		}
 
-		/*
+		// Descorer control
+		if(master.get_digital(E_CONTROLLER_DIGITAL_LEFT)) {
+			descorerMotor.move(60);
+		} else if(master.get_digital(E_CONTROLLER_DIGITAL_RIGHT)) {
+			descorerMotor.move(-60);
+		} else {
+			descorerMotor.move(0);
+		}
+
+		/* flipper PID control
 		if(master.get_digital(E_CONTROLLER_DIGITAL_RIGHT)) {
 			if(mainContainer.flip.PID.PIDRunning) {
 				mainContainer.flip.PID.requestedValue += 180;
@@ -121,7 +141,7 @@ void opcontrol() {
 		}
 		*/
 
-		/*
+		/* Two PID control
 		if(master.get_digital(E_CONTROLLER_DIGITAL_R1)) {
 			if(mainContainer.twoBar.PID.PIDRunning) {
 				mainContainer.twoBar.PID.requestedValue += 55;

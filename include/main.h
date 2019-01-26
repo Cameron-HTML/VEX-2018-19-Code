@@ -114,16 +114,13 @@ inline Motor rightFrontDriveMotor(3, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_D
 inline Motor rightBackDriveMotor(6, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
 inline Motor flyWheelMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor intakeMotor(12, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor intakeMotor(15, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor indexerMotor(16, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 
-inline Motor twoBarMotor(15, E_MOTOR_GEARSET_36, true, E_MOTOR_ENCODER_COUNTS);
-inline Motor flipperMotor(19, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
-
-// Gyro
-inline ADIGyro gyro(1);
+inline Motor descorerMotor(19, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 
 // Vision
-inline Vision visionSensor(19);
+inline Vision visionSensor(1);
 inline vector<vision_object_s_t> objVec;
 
 // Controllers

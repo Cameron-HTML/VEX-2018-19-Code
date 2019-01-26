@@ -55,7 +55,7 @@ void drive(int power, int distance) {
 }
 
 void turn(double time, bool leftTurn = true) {
-  bool run = true
+  bool run = true;
 
   while(run) {
     if(leftTurn) {
@@ -91,15 +91,18 @@ void autonomous() {
     mainContainer.flyWheel.PID.PIDRunning = true;
     delay(4000);
     intakeMotor.move(127);
+    indexerMotor.move(127);
     delay(1250);
     mainContainer.flyWheel.PID.PIDRunning = false;
     drive(-127, 6);
     delay(500);
     turn(DEG90);
     intakeMotor.move(127);
+    indexerMotor.move(127);
     drive(127, 38);
     delay(250);
     intakeMotor.move(0);
+    indexerMotor.move(0);
     drive(-127, 12);
     turn(DEG90, false);
     drive(127, 14);
@@ -196,15 +199,18 @@ void autonomous() {
     mainContainer.flyWheel.PID.PIDRunning = true;
     delay(4000);
     intakeMotor.move(127);
+    indexerMotor.move(127);
     delay(1250);
     mainContainer.flyWheel.PID.PIDRunning = false;
     drive(-127, 6);
     delay(500);
     turn(DEG90, false);
     intakeMotor.move(127);
+    indexerMotor.move(127);
     drive(127, 38);
     delay(250);
     intakeMotor.move(0);
+    indexerMotor.move(0);
     drive(-127, 12);
     turn(DEG90);
     drive(127, 14);
