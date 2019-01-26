@@ -59,6 +59,8 @@ using namespace pros::lcd;
 using namespace std;
 // using namespace okapi;
 
+#define DEG90 0.22 * 1000
+
 inline string toString(float f){
   stringstream s;
   s << f;
@@ -106,10 +108,10 @@ inline float scaleData(float data, float minIn, float maxIn, float minOut, float
 }
 
 // Motors
-inline Motor leftFrontDriveMotor(2, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor leftBackDriveMotor(7, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor rightFrontDriveMotor(3, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
-inline Motor rightBackDriveMotor(6, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor leftFrontDriveMotor(2, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor leftBackDriveMotor(7, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor rightFrontDriveMotor(3, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor rightBackDriveMotor(6, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
 inline Motor flyWheelMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor intakeMotor(12, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
@@ -269,12 +271,17 @@ typedef struct vision_d {
   int speed = 45;
 } _vision;
 
+typedef struct driveTrain_d {
+  _PID PID;
+} _driveTrain;
+
 // The 'container' that holds everything | hints the name 'mainContainer'
 typedef struct mainContainer_d {
   _LCD LCD;
   _flyWheel flyWheel;
   // _flip flip;
   // _twoBar twoBar;
+  _driveTrain driveTrain;
   _vision vision;
 } _mainContainer;
 
@@ -342,6 +349,7 @@ inline void flipPID(void* mainContainer_p) {
 inline void tracking(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
   while(true) {
+
     delay(20);
   }
 }
@@ -376,6 +384,36 @@ inline void twoBarPID(void* mainContainer_p) {
   }
 }
 */
+
+inline void driveTrainPID(void* mainContainer_p) {
+  _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
+
+  // Redefine the values needed
+  mainContainerPtr->driveTrain.PID.kP = 1.0;
+  mainContainerPtr->driveTrain.PID.kI = 0.0;
+  mainContainerPtr->driveTrain.PID.kD = 0.0;
+  mainContainerPtr->driveTrain.PID.PIDRunning = false;
+
+  // Reset the value of the encoder
+  leftFrontDriveMotor.tare_position();
+
+  float speed;
+  // Enter loop
+  while(true) {
+    if(mainContainerPtr->driveTrain.PID.PIDRunning) {
+      // If the PID is on set the motor power to 'outputPower'
+      speed = mainContainerPtr->driveTrain.PID.PID(leftFrontDriveMotor.get_position());
+      leftFrontDriveMotor.move(speed);
+      leftBackDriveMotor.move(speed);
+      rightFrontDriveMotor.move(speed);
+      rightBackDriveMotor.move(speed);
+    } else {
+      // If the PID is off reset the values
+      mainContainerPtr->driveTrain.PID.PIDReset();
+    }
+    delay(20);
+  }
+}
 
 inline void LCDUpdate(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
