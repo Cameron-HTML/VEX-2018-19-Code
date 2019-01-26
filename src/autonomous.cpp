@@ -88,6 +88,21 @@ void autonomous() {
   switch(mainContainer.LCD.auton) {
     // BLUE - LEFT
     case 0:
+    mainContainer.flyWheel.PID.PIDRunning = true;
+    delay(4000);
+    intakeMotor.move(127);
+    delay(1250);
+    mainContainer.flyWheel.PID.PIDRunning = false;
+    drive(-127, 6);
+    delay(500);
+    turn(DEG90);
+    intakeMotor.move(127);
+    drive(127, 38);
+    delay(250);
+    intakeMotor.move(0);
+    drive(-127, 12);
+    turn(DEG90, false);
+    drive(127, 14);
     break;
     // BLUE - RIGHT
     case 1:
