@@ -15,72 +15,87 @@
 void drive(int power, int distance) {
   // Reset the motor encoder count
   leftFrontDriveMotor.tare_position();
-  leftBackDriveMotor.tare_position();
-  rightFrontDriveMotor.tare_position();
-  rightBackDriveMotor.tare_position();
 
-  // Init 'tickGoal'
-  int tickGoal;
+  // Init variables
+  int currentSensorValueL = 0;
+  int currentSensorValueR = 0;
+  int totalTicks = 0;
+  int outputPowerL = 0;
+  int outputPowerR = 0;
+  int minPower = -127;
+  int maxPower = 127;
+  float tickGoal = 0;
+  int errorL = 0;
+  int errorR = 0;
+  int kP = 1;
 
-  // Calculate 'tickGoal'
-  tickGoal = 29 * (distance - 6);
+  while(abs(totalTicks) < distance) {
+    // Calculate the sensor value for left and right
+    currentSensorValueL = leftFrontDriveMotor.get_position();
+    currentSensorValueR = rightFrontDriveMotor.get_position();
 
-  while(abs(leftFrontDriveMotor.get_position()) < tickGoal) {
-    if(abs(leftFrontDriveMotor.get_position()) < tickGoal - 10) {
-      leftFrontDriveMotor.move(power);
-      leftBackDriveMotor.move(power);
-      rightFrontDriveMotor.move(power);
-      rightBackDriveMotor.move(power);
-    } else {
-      if(power > 1) {
-        leftFrontDriveMotor.move(5);
-        leftBackDriveMotor.move(5);
-        rightFrontDriveMotor.move(5);
-        rightBackDriveMotor.move(5);
-      } else {
-        leftFrontDriveMotor.move(-5);
-        leftBackDriveMotor.move(-5);
-        rightFrontDriveMotor.move(-5);
-        rightBackDriveMotor.move(-5);
-      }
+    errorL = currentSensorValueL - tickGoal;
+    errorR = currentSensorValueR - tickGoal;
+
+    outputPowerL += errorL / kP;
+    outputPowerR += errorR / kP;
+
+    // Limit 'outputPower'
+    if(outputPowerL > maxPower) {
+      outputPowerL = maxPower;
+    } else if(outputPowerL < minPower) {
+      outputPowerL = minPower;
     }
+
+    if(outputPowerR > maxPower) {
+      outputPowerR = maxPower;
+    } else if(outputPowerR < minPower) {
+      outputPowerR = minPower;
+    }
+
+    leftFrontDriveMotor.move(outputPowerL);
+    leftBackDriveMotor.move(outputPowerL);
+    rightFrontDriveMotor.move(outputPowerR);
+    rightBackDriveMotor.move(outputPowerR);
+
+    totalTicks += leftFrontDriveMotor.get_position();
+
     delay(20);
   }
-
-  delay(100);
-  leftFrontDriveMotor.move(0);
-  leftBackDriveMotor.move(0);
-  rightFrontDriveMotor.move(0);
-  rightBackDriveMotor.move(0);
 }
 
-void turn(double time, bool leftTurn = true) {
-  bool run = true;
+void turn(int degrees, bool right = false) {
+  gyro.reset();
 
-  while(run) {
-    if(leftTurn) {
-      leftFrontDriveMotor.move(-127);
-      leftBackDriveMotor.move(-127);
-      rightFrontDriveMotor.move(127);
-      rightBackDriveMotor.move(127);
-      delay(time);
-      leftFrontDriveMotor.move(0);
-      leftBackDriveMotor.move(0);
-      rightFrontDriveMotor.move(0);
-      rightBackDriveMotor.move(0);
-      run = false;
-    } else {
-      leftFrontDriveMotor.move(127);
-      leftBackDriveMotor.move(127);
-      rightFrontDriveMotor.move(-127);
-      rightBackDriveMotor.move(-127);
-      delay(time);
-      leftFrontDriveMotor.move(0);
-      leftBackDriveMotor.move(0);
-      rightFrontDriveMotor.move(0);
-      rightBackDriveMotor.move(0);
-      run = false;
+  int kP = 1;
+  int error = 0;
+  int maxPower = 127;
+  int minPower = -127;
+  int outputPower = 0;
+  int currentSensorValue = 0;
+
+  degrees *= 10;
+
+  if(!right) {
+    degrees *= -1;
+  }
+
+  while(gyro.get_value() < degrees) {
+    // Calculate the sensor value
+    currentSensorValue = gyro.get_value();
+
+    error = currentSensorValue - degrees;
+
+    outputPower += error / kP;
+
+    // Limit 'outputPower'
+    if(outputPower > maxPower) {
+      outputPower = maxPower;
+    } else if(outputPower < minPower) {
+      outputPower = minPower;
     }
+
+    delay(20);
   }
 }
 
@@ -88,24 +103,37 @@ void autonomous() {
   switch(mainContainer.LCD.auton) {
     // BLUE - LEFT
     case 0:
-    mainContainer.flyWheel.PID.PIDRunning = true;
-    delay(4000);
     intakeMotor.move(127);
     indexerMotor.move(127);
-    delay(1250);
+    drive(105, 34);
+    delay(500);
+    drive(-105, 13);
+    delay(250);
+    turn(DEG90, false);
+    delay(DEG90);
+    drive(-127, 5);
+    drive(127, 30);
+    /*
+    mainContainer.flyWheel.PID.PIDRunning = true;
+    delay(3500);
+    intakeMotor.move(127);
+    indexerMotor.move(127);
+    delay(1000);
     mainContainer.flyWheel.PID.PIDRunning = false;
-    drive(-127, 6);
     delay(500);
     turn(DEG90);
+    delay(DEG90);
     intakeMotor.move(127);
     indexerMotor.move(127);
     drive(127, 38);
     delay(250);
     intakeMotor.move(0);
     indexerMotor.move(0);
-    drive(-127, 12);
+    drive(-127, 15);
     turn(DEG90, false);
+    delay(DEG90);
     drive(127, 14);
+    */
     break;
     // BLUE - RIGHT
     case 1:
@@ -181,17 +209,22 @@ void autonomous() {
     // RED - LEFT
     case 2:
     intakeMotor.move(127);
-    drive(127, 38);
+    drive(127, 40);
     delay(300);
     intakeMotor.move(0);
     mainContainer.flyWheel.PID.PIDRunning = true;
-    drive(-127, 35);
+    drive(-127, 50);
+    drive(127, 4);
+    delay(250);
     turn(DEG90);
+    delay(DEG90);
     intakeMotor.move(110);
+    indexerMotor.move(110);
     drive(127, 38);
     delay(250);
     drive(-127, 52);
     turn(DEG90, false);
+    delay(DEG90);
     drive(127, 30);
     break;
     // RED - RIGHT
@@ -205,14 +238,16 @@ void autonomous() {
     drive(-127, 6);
     delay(500);
     turn(DEG90, false);
+    delay(DEG90);
     intakeMotor.move(127);
     indexerMotor.move(127);
-    drive(127, 38);
+    drive(127, 40);
     delay(250);
     intakeMotor.move(0);
     indexerMotor.move(0);
-    drive(-127, 12);
+    drive(-127, 15);
     turn(DEG90);
+    delay(DEG90);
     drive(127, 14);
     /*
     intakeMotor.move(127);

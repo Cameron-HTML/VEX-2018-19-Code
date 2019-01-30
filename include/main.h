@@ -59,7 +59,7 @@ using namespace pros::lcd;
 using namespace std;
 // using namespace okapi;
 
-#define DEG90 0.22 * 1000
+#define DEG90 0.24 * 1000
 
 inline string toString(float f){
   stringstream s;
@@ -118,6 +118,9 @@ inline Motor intakeMotor(15, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor indexerMotor(16, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 
 inline Motor descorerMotor(19, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+
+// Gyro
+inline ADIGyro gyro(1);
 
 // Vision
 inline Vision visionSensor(1);
@@ -469,7 +472,7 @@ inline void LCDUpdate(void* mainContainer_p) {
 		else {
 
 			mainContainerPtr->LCD.mainPages[0][0] = "Drivetrain motors:";
-		  mainContainerPtr->LCD.mainPages[0][1] = "Front left: " + toString(leftFrontDriveMotor.get_position());
+		  mainContainerPtr->LCD.mainPages[0][1] = "Front left: " + toString(gyro.get_value());
       mainContainerPtr->LCD.mainPages[0][2] = "Back left: " + toString(leftBackDriveMotor.get_temperature());
 			mainContainerPtr->LCD.mainPages[0][3] = "Front right: " + toString(rightFrontDriveMotor.get_temperature());
 			mainContainerPtr->LCD.mainPages[0][4] = "Back right: " + toString(rightBackDriveMotor.get_temperature());

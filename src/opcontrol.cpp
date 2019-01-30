@@ -94,7 +94,7 @@ void opcontrol() {
 		}
 
 		// Intake/indexer control
-		if(master.get_digital(E_CONTROLLER_DIGITAL_L1) && master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
+		if(master.get_digital(E_CONTROLLER_DIGITAL_R2)) {
 			intakeMotor.move(-127);
 			indexerMotor.move(-127);
 		}	else if(master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
