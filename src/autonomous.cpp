@@ -12,7 +12,7 @@
  * from where it left off.
  */
 
-void drive(int power, int distance) {
+void drive(int distance) {
   // Reset the motor encoder count
   leftFrontDriveMotor.tare_position();
 
