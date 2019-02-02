@@ -59,8 +59,6 @@ using namespace pros::lcd;
 using namespace std;
 // using namespace okapi;
 
-#define DEG90 0.24 * 1000
-
 inline string toString(float f){
   stringstream s;
   s << f;
@@ -113,11 +111,10 @@ inline Motor leftBackDriveMotor(7, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DE
 inline Motor rightFrontDriveMotor(3, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor rightBackDriveMotor(6, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
-inline Motor flyWheelMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor leftFlyWheelMotor(16, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor rightFlyWheelMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor intakeMotor(15, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor indexerMotor(16, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
-
-inline Motor descorerMotor(19, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 
 // Gyro
 inline ADIGyro gyro(1);
@@ -231,6 +228,7 @@ typedef struct PID_d {
     }
   }
 
+  // PID reset
   const void PIDReset() {
     requestedValue = 0.0;
     currentSensorValue = 0.0;
@@ -248,20 +246,22 @@ typedef struct flyWheel_d {
 
 } _flyWheel;
 
-/*
+/* Flipper structure
 // Flipper structure
 typedef struct flip_d {
   _PID PID;
 } _flip;
 */
 
-/*
+/* Two-bar structure
 // Two-bar structure
 typedef struct twoBar_d {
   _PID PID;
 } _twoBar;
 */
 
+/* Vision tracking struct
+// Vision tracking struct
 typedef struct vision_d {
   // 'trackingEnabled' variable
   bool trackingEnabled = false;
@@ -270,10 +270,14 @@ typedef struct vision_d {
 
   int speed = 45;
 } _vision;
+*/
 
+/* Drivetrain PID struct
+// Drivetrain PID struct
 typedef struct driveTrain_d {
   _PID PID;
 } _driveTrain;
+*/
 
 // The 'container' that holds everything | hints the name 'mainContainer'
 typedef struct mainContainer_d {
@@ -281,8 +285,7 @@ typedef struct mainContainer_d {
   _flyWheel flyWheel;
   // _flip flip;
   // _twoBar twoBar;
-  _driveTrain driveTrain;
-  _vision vision;
+  // _vision vision;
 } _mainContainer;
 
 // Define the '_mainContainer' name
@@ -304,11 +307,15 @@ inline void flyWheelPID(void* mainContainer_p) {
   while(true) {
 
     if(mainContainerPtr->flyWheel.PID.PIDRunning == true) {
-      flyWheelMotor.move(127);
+      leftFlyWheelMotor.move(127);
+      rightFlyWheelMotor.move(127);
     } else {
       // If the PID is off set the power to '0'
-      flyWheelMotor.move(0);
-      flyWheelMotor.tare_position();
+      leftFlyWheelMotor.move(0);
+      rightFlyWheelMotor.move(0);
+      leftFlyWheelMotor.tare_position();
+      leftFlyWheelMotor.tare_position();
+
       // Reset the values aswell
       mainContainerPtr->flyWheel.PID.PIDReset();
     }
@@ -316,7 +323,7 @@ inline void flyWheelPID(void* mainContainer_p) {
   }
 }
 
-/*
+/* Flipper PID task
 // Flipper PID task
 inline void flipPID(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
@@ -346,6 +353,8 @@ inline void flipPID(void* mainContainer_p) {
 }
 */
 
+/* Tracking Task
+// Tracking task
 inline void tracking(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
   while(true) {
@@ -353,8 +362,9 @@ inline void tracking(void* mainContainer_p) {
     delay(20);
   }
 }
+*/
 
-/*
+/* Two-bar PID task
 // Two-bar PID task
 inline void twoBarPID(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
@@ -385,36 +395,7 @@ inline void twoBarPID(void* mainContainer_p) {
 }
 */
 
-inline void driveTrainPID(void* mainContainer_p) {
-  _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
-
-  // Redefine the values needed
-  mainContainerPtr->driveTrain.PID.kP = 1.0;
-  mainContainerPtr->driveTrain.PID.kI = 0.0;
-  mainContainerPtr->driveTrain.PID.kD = 0.0;
-  mainContainerPtr->driveTrain.PID.PIDRunning = false;
-
-  // Reset the value of the encoder
-  leftFrontDriveMotor.tare_position();
-
-  float speed;
-  // Enter loop
-  while(true) {
-    if(mainContainerPtr->driveTrain.PID.PIDRunning) {
-      // If the PID is on set the motor power to 'outputPower'
-      speed = mainContainerPtr->driveTrain.PID.PID(leftFrontDriveMotor.get_position());
-      leftFrontDriveMotor.move(speed);
-      leftBackDriveMotor.move(speed);
-      rightFrontDriveMotor.move(speed);
-      rightBackDriveMotor.move(speed);
-    } else {
-      // If the PID is off reset the values
-      mainContainerPtr->driveTrain.PID.PIDReset();
-    }
-    delay(20);
-  }
-}
-
+// LCD task
 inline void LCDUpdate(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
 

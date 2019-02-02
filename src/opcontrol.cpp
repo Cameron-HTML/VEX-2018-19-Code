@@ -107,15 +107,6 @@ void opcontrol() {
 			indexerMotor.move(0);
 		}
 
-		// Descorer control
-		if(master.get_digital(E_CONTROLLER_DIGITAL_LEFT)) {
-			descorerMotor.move(60);
-		} else if(master.get_digital(E_CONTROLLER_DIGITAL_RIGHT)) {
-			descorerMotor.move(-60);
-		} else {
-			descorerMotor.move(0);
-		}
-
 		/* flipper PID control
 		if(master.get_digital(E_CONTROLLER_DIGITAL_RIGHT)) {
 			if(mainContainer.flip.PID.PIDRunning) {

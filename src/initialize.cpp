@@ -14,7 +14,7 @@ void initialize() {
 	Task flyWheelPIDTask(flyWheelPID, &mainContainer);
 	// Task flipPIDTask(flipPID, &mainContainer);
 	// Task twoBarPIDTask(twoBarPID, &mainContainer);
-	Task visionTracking(tracking, &mainContainer);
+	// Task visionTracking(tracking, &mainContainer);
 }
 
 /**

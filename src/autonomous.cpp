@@ -12,7 +12,7 @@
  * from where it left off.
  */
 
-void drive(int distance) {
+void drive(int distance, bool forward = true) {
   // Reset the motor encoder count
   leftFrontDriveMotor.tare_position();
 
@@ -28,6 +28,10 @@ void drive(int distance) {
   int errorL = 0;
   int errorR = 0;
   int kP = 1;
+
+  if(!forward) {
+    distance *= -1;
+  }
 
   while(abs(totalTicks) < distance) {
     // Calculate the sensor value for left and right
@@ -62,6 +66,10 @@ void drive(int distance) {
 
     delay(20);
   }
+
+  leftFrontDriveMotor.tare_position();
+  leftBackDriveMotor.tare_position();
+
 }
 
 void turn(int degrees, bool right = false) {
@@ -97,171 +105,190 @@ void turn(int degrees, bool right = false) {
 
     delay(20);
   }
+
+  gyro.reset();
+
 }
+
+void rFlywheel(bool run = true) {
+  mainContainer.flyWheel.PID.PIDRunning = run;
+}
+
+/* REMEMBER TO TEST ALL OF THE BELOW */
 
 void autonomous() {
   switch(mainContainer.LCD.auton) {
     // BLUE - LEFT
     case 0:
-    intakeMotor.move(127);
-    indexerMotor.move(127);
-    drive(105, 34);
-    delay(500);
-    drive(-105, 13);
-    delay(250);
-    turn(DEG90, false);
-    delay(DEG90);
-    drive(-127, 5);
-    drive(127, 30);
-    /*
-    mainContainer.flyWheel.PID.PIDRunning = true;
-    delay(3500);
-    intakeMotor.move(127);
-    indexerMotor.move(127);
-    delay(1000);
-    mainContainer.flyWheel.PID.PIDRunning = false;
-    delay(500);
-    turn(DEG90);
-    delay(DEG90);
-    intakeMotor.move(127);
-    indexerMotor.move(127);
-    drive(127, 38);
-    delay(250);
-    intakeMotor.move(0);
-    indexerMotor.move(0);
-    drive(-127, 15);
-    turn(DEG90, false);
-    delay(DEG90);
-    drive(127, 14);
-    */
+      // Run the intake
+      intakeMotor.move(127);
+      // Move toward cap to intake the ball
+      drive(2000);
+      // Wait 1/4 of a second to ensure we have the ball
+      delay(250);
+      // Stop the intake motor
+      intakeMotor.move(0);
+      // Drive backward to align with flags
+      drive(1250, false);
+      // Turn on the flywheel
+      rFlywheel();
+      // Turn 45 degrees to face the flags
+      turn(45, true);
+      // Turn on the intake to push balls up to the indexer
+      intakeMotor.move(127);
+      // Turn on the indexer to shoot the balls
+      indexerMotor.move(127);
+      // Delay by half a second to ensure the balls have been shot
+      delay(500);
+      // Stop the intake
+      intakeMotor.move(0);
+      // Stop the indexer
+      indexerMotor.move(0);
+      // Turn off the flywheel
+      rFlywheel(false);
+      // Turn 45 degrees to be parallel with the platform
+      turn(45);
+      // Slightly move forward to center with the platform
+      drive(250);
+      // Turn 90 degrees to face platform
+      turn(90, true);
+      // Move forward to get onto platform
+      drive(1000);
     break;
     // BLUE - RIGHT
     case 1:
-    /*
-    intakeMotor.move(115);
-    drive(110, 49);
-    delay(225);
-    intakeMotor.move(-60);
-    delay(125);
-    intakeMotor.move(0);
-    mainContainer.flyWheel.PID.PIDRunning = true;
-    delay(100);
-    drive(-110, 53);
-    drive(127, 8);
-    turn(840, false);
-    drive(60, 8);
-    delay(4000);
-    intakeMotor.move(127);
-    delay(250);
-    drive(115, 32);
-    delay(100);
-    intakeMotor.move(0);
-    mainContainer.flyWheel.PID.PIDRunning = false;
-    turn(260, false);
-    drive(60, 20);
-    drive(-127, 28);
-    turn(900, false);
-    drive(-110, 48);
-    // mainContainer.twoBar.PID.requestedValue += 450;
-    // mainContainer.flip.PID.PIDRunning = true;
-    delay(20);
-    // mainContainer.flip.PID.requestedValue += 180;
-    drive(110, 14);
-    turn(890, false);
-    drive(127, 56);
+      // Turn on the intake
+      intakeMotor.move(127);
+      // Move forward to intake ball under cap
+      drive(2000);
+      // Wait 1/4 of a second to ensure we have the balls
+      delay(250);
+      // Turn off the intake
+      intakeMotor.move(0);
+      // Turn 45 degrees to face cap
+      turn(45, true);
+      // Reverse the intake to prepare for cap flipping
+      intakeMotor.move(-127);
+      // Drive forward into cap to flip
+      drive(1000);
+      // Drive backward to previous location
+      drive(1000, false)
+      // Turn 45 degrees to undo turn
+      turn(45);
+      // Drive backward to align with flags
+      drive(500, false)
+      // Turn on the flywheel
+      rFlywheel();
+      // Turn 90 degrees to face the flags
+      turn(90);
+      // Turn on the intake to push them into the indexer
+      intakeMotor.move(127);
+      // Turn on the indexer to shoot the balls
+      indexerMotor.move(127);
+      // Drive forward to double shot and get bottom flag
+      drive(1000);
+      // Turn off the flywheel
+      rFlywheel(false);
+      // Drive backward to align with the platform
+      drive(2500, false);
+      // Turn 90 degrees to face the platform
+      turn(90);
+      // Drive forward to get on the platform
+      drive(1000);
     break;
     // RED - LEFT
     case 2:
-    intakeMotor.move(127);
-    drive(127, 50);
-    delay(250);
-    intakeMotor.move(-60);
-    delay(125);
-    intakeMotor.move(0);
-    mainContainer.flyWheel.PID.PIDRunning = true;
-    delay(100);
-    drive(-127, 50);
-    turn(790, true);
-    drive(60, 8);
-    delay(3000);
-    intakeMotor.move(127);
-    delay(250);
-    drive(127, 32);
-    delay(100);
-    intakeMotor.move(0);
-    mainContainer.flyWheel.PID.PIDRunning = false;
-    turn(900, true);
-    drive(60, 14);
-    turn(870, false);
-    drive(60, 20);
-    drive(-127, 28);
-    turn(900, true);
-    drive(-110, 48);
-    // mainContainer.twoBar.PID.requestedValue += 450;
-    // mainContainer.flip.PID.PIDRunning = true;
-    delay(20);
-    // mainContainer.flip.PID.requestedValue += 180;
-    drive(110, 14);
-    turn(890, true);
-    drive(127, 56);
-    */
-    break;
-    // RED - LEFT
-    case 2:
-    intakeMotor.move(127);
-    drive(127, 40);
-    delay(300);
-    intakeMotor.move(0);
-    mainContainer.flyWheel.PID.PIDRunning = true;
-    drive(-127, 50);
-    drive(127, 4);
-    delay(250);
-    turn(DEG90);
-    delay(DEG90);
-    intakeMotor.move(110);
-    indexerMotor.move(110);
-    drive(127, 38);
-    delay(250);
-    drive(-127, 52);
-    turn(DEG90, false);
-    delay(DEG90);
-    drive(127, 30);
+      // Turn on the intake
+      intakeMotor.move(127);
+      // Move forward to intake ball under cap
+      drive(2000);
+      // Wait 1/4 of a second to ensure we have the balls
+      delay(250);
+      // Turn off the intake
+      intakeMotor.move(0);
+      // Turn 45 degrees to face cap
+      turn(45);
+      // Reverse the intake to prepare for cap flipping
+      intakeMotor.move(-127);
+      // Drive forward into cap to flip
+      drive(1000);
+      // Drive backward to previous location
+      drive(1000, false)
+      // Turn 45 degrees to undo turn
+      turn(45, true);
+      // Drive backward to align with flags
+      drive(500, false)
+      // Turn on the flywheel
+      rFlywheel();
+      // Turn 90 degrees to face the flags
+      turn(90, true);
+      // Turn on the intake to push them into the indexer
+      intakeMotor.move(127);
+      // Turn on the indexer to shoot the balls
+      indexerMotor.move(127);
+      // Drive forward to double shot and get bottom flag
+      drive(1000);
+      // Turn off the flywheel
+      rFlywheel(false);
+      // Drive backward to align with the platform
+      drive(2500, false);
+      // Turn 90 degrees to face the platform
+      turn(90, true);
+      // Drive forward to get on the platform
+      drive(1000);
     break;
     // RED - RIGHT
     case 3:
-    mainContainer.flyWheel.PID.PIDRunning = true;
-    delay(4000);
-    intakeMotor.move(127);
-    indexerMotor.move(127);
-    delay(1250);
-    mainContainer.flyWheel.PID.PIDRunning = false;
-    drive(-127, 6);
-    delay(500);
-    turn(DEG90, false);
-    delay(DEG90);
-    intakeMotor.move(127);
-    indexerMotor.move(127);
-    drive(127, 40);
-    delay(250);
-    intakeMotor.move(0);
-    indexerMotor.move(0);
-    drive(-127, 15);
-    turn(DEG90);
-    delay(DEG90);
-    drive(127, 14);
-    /*
-    intakeMotor.move(127);
-    drive(127, 50);
-    drive(-127, 12);
-    turn(890, false);
-    drive(-127, 55);
-    */
+      // Run the intake
+      intakeMotor.move(127);
+      // Move toward cap to intake the ball
+      drive(2000);
+      // Wait 1/4 of a second to ensure we have the ball
+      delay(250);
+      // Stop the intake motor
+      intakeMotor.move(0);
+      // Drive backward to align with flags
+      drive(1250, false);
+      // Turn on the flywheel
+      rFlywheel();
+      // Turn 45 degrees to face the flags
+      turn(45);
+      // Turn on the intake to push balls up to the indexer
+      intakeMotor.move(127);
+      // Turn on the indexer to shoot the balls
+      indexerMotor.move(127);
+      // Delay by half a second to ensure the balls have been shot
+      delay(500);
+      // Stop the intake
+      intakeMotor.move(0);
+      // Stop the indexer
+      indexerMotor.move(0);
+      // Turn off the flywheel
+      rFlywheel(false);
+      // Turn 45 degrees to be parallel with the platform
+      turn(45, true);
+      // Slightly move forward to center with the platform
+      drive(250);
+      // Turn 90 degrees to face platform
+      turn(90);
+      // Move forward to get onto platform
+      drive(1000);
+    break;
+    // JASON COUNTER - BLUE
+    case 4:
+     // WORK ON LATER
+    break;
+    // JASON COUNTER - RED
+    case 5:
+      // WORK ON LATER
     break;
     // SKILLS
-    case 4:
+    case 6:
+      // WORK ON LATER
     break;
     // DISABLE
-    case 5:
+    case 8:
+      // DO NOTHING
     break;
   }
 }
