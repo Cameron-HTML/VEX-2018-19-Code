@@ -12,64 +12,21 @@
  * from where it left off.
  */
 
-void drive(int distance, bool forward = true) {
-  // Reset the motor encoder count
-  leftFrontDriveMotor.tare_position();
-
-  // Init variables
-  int currentSensorValueL = 0;
-  int currentSensorValueR = 0;
-  int totalTicks = 0;
-  int outputPowerL = 0;
-  int outputPowerR = 0;
-  int minPower = -127;
-  int maxPower = 127;
-  float tickGoal = 0;
-  int errorL = 0;
-  int errorR = 0;
-  int kP = 1;
-
-  if(!forward) {
-    distance *= -1;
-  }
-
-  while(abs(totalTicks) < distance) {
-    // Calculate the sensor value for left and right
-    currentSensorValueL = leftFrontDriveMotor.get_position();
-    currentSensorValueR = rightFrontDriveMotor.get_position();
-
-    errorL = currentSensorValueL - tickGoal;
-    errorR = currentSensorValueR - tickGoal;
-
-    outputPowerL += errorL / kP;
-    outputPowerR += errorR / kP;
-
-    // Limit 'outputPower'
-    if(outputPowerL > maxPower) {
-      outputPowerL = maxPower;
-    } else if(outputPowerL < minPower) {
-      outputPowerL = minPower;
-    }
-
-    if(outputPowerR > maxPower) {
-      outputPowerR = maxPower;
-    } else if(outputPowerR < minPower) {
-      outputPowerR = minPower;
-    }
-
-    leftFrontDriveMotor.move(outputPowerL);
-    leftBackDriveMotor.move(outputPowerL);
-    rightFrontDriveMotor.move(outputPowerR);
-    rightBackDriveMotor.move(outputPowerR);
-
-    totalTicks += leftFrontDriveMotor.get_position();
-
-    delay(20);
-  }
-
+void drive(float requested) {
   leftFrontDriveMotor.tare_position();
   leftBackDriveMotor.tare_position();
+  rightFrontDriveMotor.tare_position();
+  rightBackDriveMotor.tare_position();
 
+  mainContainer.driveTrain.PID.requestedValue = requested;
+  mainContainer.driveTrain.PID.PIDRunning = true;
+
+  while(mainContainer.driveTrain.PID.PIDRunning) delay(20);
+
+  leftFrontDriveMotor.move(0);
+  leftBackDriveMotor.move(0);
+  rightFrontDriveMotor.move(0);
+  rightBackDriveMotor.move(0);
 }
 
 void turn(int degrees, bool right = false) {
@@ -120,6 +77,8 @@ void autonomous() {
   switch(mainContainer.LCD.auton) {
     // BLUE - LEFT
     case 0:
+      drive(500);
+      /*
       // Run the intake
       intakeMotor.move(127);
       // Move toward cap to intake the ball
@@ -154,9 +113,11 @@ void autonomous() {
       turn(90, true);
       // Move forward to get onto platform
       drive(1000);
+      */
     break;
     // BLUE - RIGHT
     case 1:
+      /*
       // Turn on the intake
       intakeMotor.move(127);
       // Move forward to intake ball under cap
@@ -172,7 +133,7 @@ void autonomous() {
       // Drive forward into cap to flip
       drive(1000);
       // Drive backward to previous location
-      drive(1000, false);
+      drive(1000);
       // Turn 45 degrees to undo turn
       turn(45);
       // Drive backward to align with flags
@@ -195,9 +156,11 @@ void autonomous() {
       turn(90);
       // Drive forward to get on the platform
       drive(1000);
+      */
     break;
     // RED - LEFT
     case 2:
+      /*
       // Turn on the intake
       intakeMotor.move(127);
       // Move forward to intake ball under cap
@@ -236,9 +199,22 @@ void autonomous() {
       turn(90, true);
       // Drive forward to get on the platform
       drive(1000);
+      */
     break;
     // RED - RIGHT
     case 3:
+    intakeMotor.move(127);
+    indexerMotor.move(127);
+    drive(1200);
+    delay(1000);
+    intakeMotor.move(0);
+    indexerMotor.move(0);
+    delay(500);
+    drive(-200);
+    delay(500);
+    turn(45, true);
+
+      /*
       // Run the intake
       intakeMotor.move(127);
       // Move toward cap to intake the ball
@@ -273,6 +249,7 @@ void autonomous() {
       turn(90);
       // Move forward to get onto platform
       drive(1000);
+      */
     break;
     // JASON COUNTER - BLUE
     case 4:

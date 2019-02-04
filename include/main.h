@@ -272,12 +272,10 @@ typedef struct vision_d {
 } _vision;
 */
 
-/* Drivetrain PID struct
 // Drivetrain PID struct
 typedef struct driveTrain_d {
   _PID PID;
 } _driveTrain;
-*/
 
 // The 'container' that holds everything | hints the name 'mainContainer'
 typedef struct mainContainer_d {
@@ -286,6 +284,7 @@ typedef struct mainContainer_d {
   // _flip flip;
   // _twoBar twoBar;
   // _vision vision;
+  _driveTrain driveTrain;
 } _mainContainer;
 
 // Define the '_mainContainer' name
@@ -395,6 +394,45 @@ inline void twoBarPID(void* mainContainer_p) {
   }
 }
 */
+
+// Drivetrain PID task
+inline void driveTrainPID(void* mainContainer_p) {
+  _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
+
+  // Redefine the values needed
+  mainContainerPtr->driveTrain.PID.kP = 1.0;
+  mainContainerPtr->driveTrain.PID.kI = 0.0;
+  mainContainerPtr->driveTrain.PID.kD = 0.0;
+  mainContainerPtr->driveTrain.PID.maxPower = 127;
+  mainContainerPtr->driveTrain.PID.minPower = -127;
+  mainContainerPtr->driveTrain.PID.PIDRunning = false;
+
+  // Reset the value of the encoder
+  leftFrontDriveMotor.tare_position();
+
+  int speed;
+
+  // Enter loop
+  while(true) {
+    if(mainContainerPtr->driveTrain.PID.PIDRunning) {
+      speed = mainContainerPtr->driveTrain.PID.PID(leftFrontDriveMotor.get_position());
+
+      // If the PID is on set the motor power to 'outputPower'
+      leftFrontDriveMotor.move(speed);
+      leftBackDriveMotor.move(speed);
+      rightFrontDriveMotor.move(speed);
+      rightBackDriveMotor.move(speed);
+
+      if(abs(mainContainerPtr->driveTrain.PID.derivative) <= 3 && speed <= 4) {
+        mainContainerPtr->driveTrain.PID.PIDRunning = false;
+      }
+    } else {
+      // If the PID is off reset the values
+      mainContainerPtr->driveTrain.PID.PIDReset();
+    }
+    delay(20);
+  }
+}
 
 // LCD task
 inline void LCDUpdate(void* mainContainer_p) {

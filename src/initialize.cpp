@@ -12,6 +12,7 @@ void initialize() {
 
 	Task LCDUpdateTask(LCDUpdate, &mainContainer);
 	Task flyWheelPIDTask(flyWheelPID, &mainContainer);
+	Task driveTrainPIDTask(driveTrainPID, &mainContainer);
 	// Task flipPIDTask(flipPID, &mainContainer);
 	// Task twoBarPIDTask(twoBarPID, &mainContainer);
 	// Task visionTracking(tracking, &mainContainer);
