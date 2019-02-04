@@ -172,11 +172,11 @@ void autonomous() {
       // Drive forward into cap to flip
       drive(1000);
       // Drive backward to previous location
-      drive(1000, false)
+      drive(1000, false);
       // Turn 45 degrees to undo turn
       turn(45);
       // Drive backward to align with flags
-      drive(500, false)
+      drive(500, false);
       // Turn on the flywheel
       rFlywheel();
       // Turn 90 degrees to face the flags
@@ -213,11 +213,11 @@ void autonomous() {
       // Drive forward into cap to flip
       drive(1000);
       // Drive backward to previous location
-      drive(1000, false)
+      drive(1000, false);
       // Turn 45 degrees to undo turn
       turn(45, true);
       // Drive backward to align with flags
-      drive(500, false)
+      drive(500, false);
       // Turn on the flywheel
       rFlywheel();
       // Turn 90 degrees to face the flags

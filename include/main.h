@@ -111,10 +111,10 @@ inline Motor leftBackDriveMotor(7, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DE
 inline Motor rightFrontDriveMotor(3, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor rightBackDriveMotor(6, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
-inline Motor leftFlyWheelMotor(16, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor rightFlyWheelMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor intakeMotor(15, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor indexerMotor(16, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor leftFlyWheelMotor(12, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor rightFlyWheelMotor(15, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor intakeMotor(9, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+inline Motor indexerMotor(7, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
 // Gyro
 inline ADIGyro gyro(1);
@@ -302,7 +302,8 @@ inline void flyWheelPID(void* mainContainer_p) {
   mainContainerPtr->flyWheel.PID.PIDRunning = false;
 
   // Reset the value of the encoder
-  flyWheelMotor.tare_position();
+  leftFlyWheelMotor.tare_position();
+  rightFlyWheelMotor.tare_position();
 
   while(true) {
 
@@ -460,7 +461,8 @@ inline void LCDUpdate(void* mainContainer_p) {
 			mainContainerPtr->LCD.mainPages[0][7] = "Motor temperatures - <1/2>";
 
 			mainContainerPtr->LCD.mainPages[1][0] = "Flywheel motors:";
-			mainContainerPtr->LCD.mainPages[1][1] = "Flywheel: " + toString(flyWheelMotor.get_temperature());
+			mainContainerPtr->LCD.mainPages[1][1] = "Flywheel: " + toString(leftFlyWheelMotor.get_temperature());
+      mainContainerPtr->LCD.mainPages[1][1] = "Flywheel: " + toString(rightFlyWheelMotor.get_temperature());
 			mainContainerPtr->LCD.mainPages[1][2] = "Intake: " + toString(intakeMotor.get_temperature());
 			mainContainerPtr->LCD.mainPages[1][7] = "Motor temperatures - <2/2>";
 
@@ -472,8 +474,9 @@ inline void LCDUpdate(void* mainContainer_p) {
 			mainContainerPtr->LCD.mainPages[2][7] = "Motor efficiency - <1/2>";
 
 			mainContainerPtr->LCD.mainPages[3][0] = "Flywheel motors:";
-			mainContainerPtr->LCD.mainPages[3][1] = "Flywheel: " + toString(flyWheelMotor.get_efficiency());
-			mainContainerPtr->LCD.mainPages[3][2] = "Intake: " + toString(intakeMotor.get_efficiency());
+			mainContainerPtr->LCD.mainPages[3][1] = "Flywheel: " + toString(leftFlyWheelMotor.get_efficiency());
+      mainContainerPtr->LCD.mainPages[3][2] = "Flywheel: " + toString(rightFlyWheelMotor.get_efficiency());
+			mainContainerPtr->LCD.mainPages[3][3] = "Intake: " + toString(intakeMotor.get_efficiency());
 			mainContainerPtr->LCD.mainPages[3][7] = "Motor efficiency - <2/2>";
 
 			if(read_buttons() == LCD_BTN_LEFT) {
