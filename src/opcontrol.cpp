@@ -28,10 +28,10 @@ void opcontrol() {
 				rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
 				rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
 			} else {
-				leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
-				leftBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
-				rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
-				rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+				leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+				leftBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+				rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+				rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
 			}
 		} else {
 			leftFrontDriveMotor.move(0);
