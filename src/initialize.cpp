@@ -9,10 +9,12 @@
 void initialize() {
 	lcd::initialize();
 	visionSensor.clear_led();
+	gyro.reset();
 
 	Task LCDUpdateTask(LCDUpdate, &mainContainer);
 	Task flyWheelPIDTask(flyWheelPID, &mainContainer);
 	Task driveTrainPIDTask(driveTrainPID, &mainContainer);
+	Task presetTaskTask(presetTask, &mainContainer);
 	// Task flipPIDTask(flipPID, &mainContainer);
 	// Task twoBarPIDTask(twoBarPID, &mainContainer);
 	// Task visionTracking(tracking, &mainContainer);

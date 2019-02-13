@@ -21,7 +21,7 @@ void drive(float requested) {
   mainContainer.driveTrain.PID.requestedValue = requested;
   mainContainer.driveTrain.PID.PIDRunning = true;
 
-  while(mainContainer.driveTrain.PID.PIDRunning) delay(20);
+  while(mainContainer.driveTrain.PID.PIDRunning) delay(10);
 
   leftFrontDriveMotor.move(0);
   leftBackDriveMotor.move(0);
@@ -30,41 +30,40 @@ void drive(float requested) {
 }
 
 void turn(int degrees, bool right = false) {
-  gyro.reset();
+  leftFrontDriveMotor.tare_position();
 
-  int kP = 1;
-  int error = 0;
-  int maxPower = 127;
-  int minPower = -127;
-  int outputPower = 0;
-  int currentSensorValue = 0;
-
-  degrees *= 10;
-
-  if(!right) {
-    degrees *= -1;
-  }
-
-  while(gyro.get_value() < degrees) {
-    // Calculate the sensor value
-    currentSensorValue = gyro.get_value();
-
-    error = currentSensorValue - degrees;
-
-    outputPower += error / kP;
-
-    // Limit 'outputPower'
-    if(outputPower > maxPower) {
-      outputPower = maxPower;
-    } else if(outputPower < minPower) {
-      outputPower = minPower;
+  while(abs(leftFrontDriveMotor.get_position()) < degrees) {
+    if(!right) {
+      if(abs(leftFrontDriveMotor.get_position()) < (degrees - 60)) {
+        leftFrontDriveMotor.move(-90);
+        leftBackDriveMotor.move(-90);
+        rightFrontDriveMotor.move(90);
+        rightBackDriveMotor.move(90);
+      } else {
+        leftFrontDriveMotor.move(-10);
+        leftBackDriveMotor.move(-10);
+        rightFrontDriveMotor.move(10);
+        rightBackDriveMotor.move(10);
+      }
+    } else {
+      if(abs(leftFrontDriveMotor.get_position()) < (degrees - 60)) {
+        leftFrontDriveMotor.move(90);
+        leftBackDriveMotor.move(90);
+        rightFrontDriveMotor.move(-90);
+        rightBackDriveMotor.move(-90);
+      } else {
+        leftFrontDriveMotor.move(10);
+        leftBackDriveMotor.move(10);
+        rightFrontDriveMotor.move(-10);
+        rightBackDriveMotor.move(-10);
+      }
     }
-
-    delay(20);
+    delay(40);
   }
-
-  gyro.reset();
-
+  leftFrontDriveMotor.move(0);
+  leftBackDriveMotor.move(0);
+  rightFrontDriveMotor.move(0);
+  rightBackDriveMotor.move(0);
 }
 
 void rFlywheel(bool run = true) {
@@ -77,7 +76,7 @@ void autonomous() {
   switch(mainContainer.LCD.auton) {
     // BLUE - LEFT
     case 0:
-      drive(500);
+      turn(320);
       /*
       // Run the intake
       intakeMotor.move(127);
@@ -160,6 +159,59 @@ void autonomous() {
     break;
     // RED - LEFT
     case 2:
+
+    intakeMotor.move(127);
+    indexerMotor.move(65);
+    rFlywheel();
+    drive(1300);
+    delay(250);
+    intakeMotor.move(0);
+    indexerMotor.move(0);
+    drive(-1500);
+    drive(100);
+    turn(270);
+    drive(-100);
+    intakeMotor.move(127);
+    indexerMotor.move(90);
+    delay(550);
+    leftFrontDriveMotor.move(102);
+    leftBackDriveMotor.move(102);
+    rightFrontDriveMotor.move(127);
+    rightBackDriveMotor.move(127);
+    delay(1500);
+    rFlywheel(false);
+    indexerMotor.move(40);
+    leftFrontDriveMotor.move(0);
+    leftBackDriveMotor.move(0);
+    rightFrontDriveMotor.move(0);
+    rightBackDriveMotor.move(0);
+    delay(500);
+    leftFrontDriveMotor.move(-127);
+    leftBackDriveMotor.move(-127);
+    rightFrontDriveMotor.move(-100);
+    rightBackDriveMotor.move(-100);
+    delay(600);
+    leftFrontDriveMotor.move(0);
+    leftBackDriveMotor.move(0);
+    rightFrontDriveMotor.move(0);
+    rightBackDriveMotor.move(0);
+    turn(320, true);
+    delay(300);
+    leftFrontDriveMotor.move(-127);
+    leftBackDriveMotor.move(-127);
+    rightFrontDriveMotor.move(-127);
+    rightBackDriveMotor.move(-127);
+    delay(750);
+    indexerMotor.move(40);
+    leftFrontDriveMotor.move(0);
+    leftBackDriveMotor.move(0);
+    rightFrontDriveMotor.move(0);
+    rightBackDriveMotor.move(0);
+    intakeMotor.move(-100);
+    drive(1200);
+    turn(330, true);
+    drive(1500);
+
       /*
       // Turn on the intake
       intakeMotor.move(127);
@@ -203,17 +255,46 @@ void autonomous() {
     break;
     // RED - RIGHT
     case 3:
-    intakeMotor.move(127);
-    indexerMotor.move(127);
-    drive(1200);
-    delay(1000);
-    intakeMotor.move(0);
-    indexerMotor.move(0);
-    delay(500);
-    drive(-200);
-    delay(500);
-    turn(45, true);
-
+      intakeMotor.move(127);
+      indexerMotor.move(60);
+      drive(1400);
+      rFlywheel();
+      delay(250);
+      indexerMotor.move(0);
+      intakeMotor.move(0);
+      turn(340);
+      leftFrontDriveMotor.move(90);
+      leftBackDriveMotor.move(90);
+      rightFrontDriveMotor.move(90);
+      rightBackDriveMotor.move(90);
+      delay(300);
+      leftFrontDriveMotor.move(0);
+      leftBackDriveMotor.move(0);
+      rightFrontDriveMotor.move(0);
+      rightBackDriveMotor.move(0);
+      delay(100);
+      drive(-250);
+      delay(1250);
+      indexerMotor.move(127);
+      intakeMotor.move(127);
+      delay(750);
+      indexerMotor.move(0);
+      intakeMotor.move(0);
+      /*
+      delay(250);
+      indexerMotor.move(127);
+      intakeMotor.move(127);
+      delay(500);
+      indexerMotor.move(0);
+      intakeMotor.move(0);
+      delay(500);
+      drive(400);
+      turn(300, true);
+      delay(250);
+      drive(-300);
+      turn(320);
+      drive(800);
+      */
       /*
       // Run the intake
       intakeMotor.move(127);
@@ -251,20 +332,12 @@ void autonomous() {
       drive(1000);
       */
     break;
-    // JASON COUNTER - BLUE
-    case 4:
-     // WORK ON LATER
-    break;
-    // JASON COUNTER - RED
-    case 5:
-      // WORK ON LATER
-    break;
     // SKILLS
-    case 6:
+    case 4:
       // WORK ON LATER
     break;
     // DISABLE
-    case 8:
+    case 5:
       // DO NOTHING
     break;
   }

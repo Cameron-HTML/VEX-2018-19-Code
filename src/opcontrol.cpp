@@ -18,26 +18,29 @@ void opcontrol() {
 	// Init variables
 	bool reversed = false;
 	bool brake = false;
+	mainContainer.driveTrain.PID.PIDRunning = false;
 	while(true) {
 
 		// Joystick thresh-hold
-		if(abs(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) >= 15 || abs(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)) >= 15) {
-			if(reversed) {
-				leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
-				leftBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
-				rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
-				rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+		if(mainContainer.preset.doubleShot == false) {
+			if(abs(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) >= 15 || abs(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)) >= 15) {
+				if(reversed) {
+					leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+					leftBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+					rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+					rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+				} else {
+					leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+					leftBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+					rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+					rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+				}
 			} else {
-				leftFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
-				leftBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
-				rightFrontDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
-				rightBackDriveMotor.move(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
+				leftFrontDriveMotor.move(0);
+				leftBackDriveMotor.move(0);
+				rightFrontDriveMotor.move(0);
+				rightBackDriveMotor.move(0);
 			}
-		} else {
-			leftFrontDriveMotor.move(0);
-			leftBackDriveMotor.move(0);
-			rightFrontDriveMotor.move(0);
-			rightBackDriveMotor.move(0);
 		}
 
 		// Brake system
@@ -94,17 +97,34 @@ void opcontrol() {
 		}
 
 		// Intake/indexer control
-		if(master.get_digital(E_CONTROLLER_DIGITAL_R2)) {
-			intakeMotor.move(-127);
-			indexerMotor.move(-127);
-		}	else if(master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
-			intakeMotor.move(127);
-			indexerMotor.move(127);
-		} else if(master.get_digital(E_CONTROLLER_DIGITAL_L1)) {
-			intakeMotor.move(-127);
-		} else {
-			intakeMotor.move(0);
+		if(mainContainer.preset.doubleShot == false) {
+			if(master.get_digital(E_CONTROLLER_DIGITAL_R2)) {
+				intakeMotor.move(-127);
+				indexerMotor.move(-127);
+			}	else if(master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
+				intakeMotor.move(127);
+				indexerMotor.move(127);
+			} else if(master.get_digital(E_CONTROLLER_DIGITAL_L1)) {
+				intakeMotor.move(-127);
+			} else {
+				intakeMotor.move(0);
+				indexerMotor.move(0);
+			}
+		}
+
+		if(master.get_digital(E_CONTROLLER_DIGITAL_X) && mainContainer.preset.doubleShot) {
+			leftFrontDriveMotor.move(0);
+			leftBackDriveMotor.move(0);
+			rightFrontDriveMotor.move(0);
+			rightBackDriveMotor.move(0);
 			indexerMotor.move(0);
+			mainContainer.preset.doubleShot = false;
+
+			while(master.get_digital(E_CONTROLLER_DIGITAL_X)) delay(20);
+		} else if(master.get_digital(E_CONTROLLER_DIGITAL_X)) {
+			mainContainer.preset.doubleShot = true;
+
+			while(master.get_digital(E_CONTROLLER_DIGITAL_X)) delay(20);
 		}
 
 		/* flipper PID control

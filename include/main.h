@@ -111,13 +111,13 @@ inline Motor leftBackDriveMotor(3, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DE
 inline Motor rightFrontDriveMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor rightBackDriveMotor(4, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
-inline Motor leftFlyWheelMotor(12, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
-inline Motor rightFlyWheelMotor(15, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor leftFlyWheelMotor(12, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor rightFlyWheelMotor(15, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 inline Motor intakeMotor(9, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 inline Motor indexerMotor(7, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 
 // Gyro
-inline ADIGyro gyro(1);
+inline ADIGyro gyro(8);
 
 // Vision
 inline Vision visionSensor(1);
@@ -129,6 +129,7 @@ inline Controller master(E_CONTROLLER_MASTER);
 // LCD structure
 typedef struct LCD_D {
   vector<vector<string>> mainPages = {
+    {"", "", "" , "" , "", "", "", ""},
     {"", "", "" , "" , "", "", "", ""},
     {"", "", "" , "" , "", "", "", ""},
     {"", "", "" , "" , "", "", "", ""},
@@ -277,6 +278,11 @@ typedef struct driveTrain_d {
   _PID PID;
 } _driveTrain;
 
+// Preset struct
+typedef struct preset_d {
+  bool doubleShot = false;
+} _preset;
+
 // The 'container' that holds everything | hints the name 'mainContainer'
 typedef struct mainContainer_d {
   _LCD LCD;
@@ -285,6 +291,7 @@ typedef struct mainContainer_d {
   // _twoBar twoBar;
   // _vision vision;
   _driveTrain driveTrain;
+  _preset preset;
 } _mainContainer;
 
 // Define the '_mainContainer' name
@@ -400,9 +407,9 @@ inline void driveTrainPID(void* mainContainer_p) {
   _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
 
   // Redefine the values needed
-  mainContainerPtr->driveTrain.PID.kP = 1.0;
-  mainContainerPtr->driveTrain.PID.kI = 0.0;
-  mainContainerPtr->driveTrain.PID.kD = 0.0;
+  mainContainerPtr->driveTrain.PID.kP = 0.42;
+  mainContainerPtr->driveTrain.PID.kI = 0.01;
+  mainContainerPtr->driveTrain.PID.kD = 0.01;
   mainContainerPtr->driveTrain.PID.maxPower = 127;
   mainContainerPtr->driveTrain.PID.minPower = -127;
   mainContainerPtr->driveTrain.PID.PIDRunning = false;
@@ -423,13 +430,43 @@ inline void driveTrainPID(void* mainContainer_p) {
       rightFrontDriveMotor.move(speed);
       rightBackDriveMotor.move(speed);
 
-      if(abs(mainContainerPtr->driveTrain.PID.derivative) <= 3 && speed <= 4) {
+      if(abs(mainContainerPtr->driveTrain.PID.derivative) <= 3 && speed <= 6) {
         mainContainerPtr->driveTrain.PID.PIDRunning = false;
       }
     } else {
       // If the PID is off reset the values
       mainContainerPtr->driveTrain.PID.PIDReset();
     }
+    delay(20);
+  }
+}
+
+// Preset task
+inline void presetTask(void* mainContainer_p) {
+  _mainContainer *mainContainerPtr = (_mainContainer *)mainContainer_p;
+
+  while(true) {
+    if(mainContainerPtr->preset.doubleShot) {
+      indexerMotor.move(127);
+      delay(250);
+      leftFrontDriveMotor.move(100);
+      leftBackDriveMotor.move(100);
+      rightFrontDriveMotor.move(127);
+      rightBackDriveMotor.move(127);
+      delay(250);
+      leftFrontDriveMotor.move(127);
+      leftBackDriveMotor.move(127);
+      rightFrontDriveMotor.move(127);
+      rightBackDriveMotor.move(127);
+      delay(1250);
+      leftFrontDriveMotor.move(0);
+      leftBackDriveMotor.move(0);
+      rightFrontDriveMotor.move(0);
+      rightBackDriveMotor.move(0);
+      indexerMotor.move(0);
+      mainContainerPtr->preset.doubleShot = false;
+    }
+
     delay(20);
   }
 }
@@ -513,8 +550,10 @@ inline void LCDUpdate(void* mainContainer_p) {
       mainContainerPtr->LCD.mainPages[2][6] = "Flywheel Right: " + toString(rightFlyWheelMotor.get_efficiency());
 			mainContainerPtr->LCD.mainPages[2][7] = "Intake: " + toString(intakeMotor.get_efficiency());
 
-      mainContainerPtr->LCD.mainPages[3][0] = "Motor Efficiency <2/2>:";
-      mainContainerPtr->LCD.mainPages[3][1] = "Indexer: " + toString(indexerMotor.get_efficiency());
+      mainContainerPtr->LCD.mainPages[3][0] = "Sensor Values <2/2>:";
+      mainContainerPtr->LCD.mainPages[3][1] = "Left Front: " + toString(leftFrontDriveMotor.get_position());
+      mainContainerPtr->LCD.mainPages[3][2] = "Right Front: " + toString(rightBackDriveMotor.get_position());
+      mainContainerPtr->LCD.mainPages[3][2] = "Gyro:" + toString(gyro.get_value());
 
 			if(read_buttons() == LCD_BTN_LEFT) {
 				mainContainerPtr->LCD.currentPage -= 1;
