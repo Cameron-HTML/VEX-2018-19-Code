@@ -1,5 +1,4 @@
 #include "main.h"
-
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -170,12 +169,11 @@ void autonomous() {
     drive(-1500);
     drive(100);
     turn(270);
-    drive(-100);
     intakeMotor.move(127);
-    indexerMotor.move(90);
+    indexerMotor.move(100);
     delay(550);
-    leftFrontDriveMotor.move(102);
-    leftBackDriveMotor.move(102);
+    leftFrontDriveMotor.move(92);
+    leftBackDriveMotor.move(92);
     rightFrontDriveMotor.move(127);
     rightBackDriveMotor.move(127);
     delay(1500);
@@ -210,6 +208,7 @@ void autonomous() {
     intakeMotor.move(-100);
     drive(1200);
     turn(330, true);
+    intakeMotor.move(127);
     drive(1500);
 
       /*
