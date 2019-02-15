@@ -160,7 +160,7 @@ void autonomous() {
     case 2:
 
     intakeMotor.move(127);
-    indexerMotor.move(65);
+    indexerMotor.move(72);
     rFlywheel();
     drive(1300);
     delay(250);
@@ -169,11 +169,12 @@ void autonomous() {
     drive(-1500);
     drive(100);
     turn(270);
+    drive(275);
     intakeMotor.move(127);
-    indexerMotor.move(100);
-    delay(550);
-    leftFrontDriveMotor.move(92);
-    leftBackDriveMotor.move(92);
+    indexerMotor.move(127);
+    delay(600);
+    leftFrontDriveMotor.move(96);
+    leftBackDriveMotor.move(96);
     rightFrontDriveMotor.move(127);
     rightBackDriveMotor.move(127);
     delay(1500);
@@ -205,11 +206,11 @@ void autonomous() {
     leftBackDriveMotor.move(0);
     rightFrontDriveMotor.move(0);
     rightBackDriveMotor.move(0);
-    intakeMotor.move(-100);
-    drive(1200);
+    intakeMotor.move(-70);
+    drive(1225);
     turn(330, true);
     intakeMotor.move(127);
-    drive(1500);
+    drive(1600);
 
       /*
       // Turn on the intake
@@ -254,31 +255,32 @@ void autonomous() {
     break;
     // RED - RIGHT
     case 3:
+      rFlywheel();
       intakeMotor.move(127);
       indexerMotor.move(60);
-      drive(1400);
-      rFlywheel();
-      delay(250);
-      indexerMotor.move(0);
+      drive(1200);
+      delay(500);
       intakeMotor.move(0);
+      indexerMotor.move(0);
+      drive(-400);
+      turn(320, true);
+      drive(550);
+      turn(320);
+      intakeMotor.move(-127);
+      drive(600);
+      drive(-600);
+      turn(330, true);
+      drive(-500);
+      turn(320);
+      drive(-800);
+      /*
+      drive(-400);
+      turn(340, true);
+      drive(-500);
       turn(340);
-      leftFrontDriveMotor.move(90);
-      leftBackDriveMotor.move(90);
-      rightFrontDriveMotor.move(90);
-      rightBackDriveMotor.move(90);
-      delay(300);
-      leftFrontDriveMotor.move(0);
-      leftBackDriveMotor.move(0);
-      rightFrontDriveMotor.move(0);
-      rightBackDriveMotor.move(0);
-      delay(100);
-      drive(-250);
-      delay(1250);
-      indexerMotor.move(127);
-      intakeMotor.move(127);
-      delay(750);
-      indexerMotor.move(0);
-      intakeMotor.move(0);
+      drive(-1300);
+      */
+
       /*
       delay(250);
       indexerMotor.move(127);

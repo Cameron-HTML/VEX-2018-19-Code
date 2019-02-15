@@ -110,7 +110,7 @@ inline Motor leftFrontDriveMotor(19, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_
 inline Motor leftBackDriveMotor(3, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 inline Motor rightFrontDriveMotor(17, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor rightBackDriveMotor(4, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-inline Motor leftFlyWheelMotor(12, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
+inline Motor leftFlyWheelMotor(16, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 inline Motor rightFlyWheelMotor(15, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 inline Motor intakeMotor(9, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 inline Motor indexerMotor(7, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
