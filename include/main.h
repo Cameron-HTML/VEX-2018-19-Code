@@ -429,7 +429,7 @@ inline void driveTrainPID(void* mainContainer_p) {
       rightFrontDriveMotor.move(speed);
       rightBackDriveMotor.move(speed);
 
-      if(abs(mainContainerPtr->driveTrain.PID.derivative) <= 3 && speed <= 20) {
+      if(abs(mainContainerPtr->driveTrain.PID.derivative) <= 3 && abs(speed) <= 10) {
         mainContainerPtr->driveTrain.PID.PIDRunning = false;
       }
     } else {
@@ -586,6 +586,7 @@ inline void LCDUpdate(void* mainContainer_p) {
 		delay(20);
 	}
 }
+
 
 /**
  * Prototypes for the competition control tasks are redefined here to ensure

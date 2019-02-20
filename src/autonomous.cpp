@@ -12,6 +12,9 @@
  */
 
 void drive(float requested) {
+
+  while(mainContainer.driveTrain.PID.PIDRunning) delay(10);
+
   leftFrontDriveMotor.tare_position();
   leftBackDriveMotor.tare_position();
   rightFrontDriveMotor.tare_position();
@@ -169,15 +172,20 @@ void autonomous() {
     drive(-1500);
     drive(100);
     turn(270);
-    drive(275);
+    drive(325);
     intakeMotor.move(127);
     indexerMotor.move(127);
     delay(600);
-    leftFrontDriveMotor.move(96);
-    leftBackDriveMotor.move(96);
+    leftFrontDriveMotor.move(127);
+    leftBackDriveMotor.move(127);
     rightFrontDriveMotor.move(127);
     rightBackDriveMotor.move(127);
-    delay(1500);
+    delay(250);
+    leftFrontDriveMotor.move(84);
+    leftBackDriveMotor.move(84);
+    rightFrontDriveMotor.move(127);
+    rightBackDriveMotor.move(127);
+    delay(1250);
     rFlywheel(false);
     indexerMotor.move(40);
     leftFrontDriveMotor.move(0);
@@ -187,8 +195,8 @@ void autonomous() {
     delay(500);
     leftFrontDriveMotor.move(-127);
     leftBackDriveMotor.move(-127);
-    rightFrontDriveMotor.move(-100);
-    rightBackDriveMotor.move(-100);
+    rightFrontDriveMotor.move(-110);
+    rightBackDriveMotor.move(-110);
     delay(600);
     leftFrontDriveMotor.move(0);
     leftBackDriveMotor.move(0);
@@ -206,7 +214,7 @@ void autonomous() {
     leftBackDriveMotor.move(0);
     rightFrontDriveMotor.move(0);
     rightBackDriveMotor.move(0);
-    intakeMotor.move(-70);
+    intakeMotor.move(-60);
     drive(1225);
     turn(330, true);
     intakeMotor.move(127);
@@ -255,9 +263,8 @@ void autonomous() {
     break;
     // RED - RIGHT
     case 3:
-      rFlywheel();
       intakeMotor.move(127);
-      indexerMotor.move(60);
+      indexerMotor.move(70);
       drive(1200);
       delay(500);
       intakeMotor.move(0);
@@ -267,12 +274,27 @@ void autonomous() {
       drive(550);
       turn(320);
       intakeMotor.move(-127);
-      drive(600);
-      drive(-600);
-      turn(330, true);
-      drive(-500);
+      drive(-300);
+      leftFrontDriveMotor.move(60);
+      leftBackDriveMotor.move(60);
+      rightFrontDriveMotor.move(60);
+      rightBackDriveMotor.move(60);
+      delay(1500);
+      leftFrontDriveMotor.move(0);
+      leftBackDriveMotor.move(0);
+      rightFrontDriveMotor.move(0);
+      rightBackDriveMotor.move(0);
+      delay(250);
+      drive(-1410);
+      delay(250);
+      drive(300);
       turn(320);
-      drive(-800);
+      drive(1175);
+      turn(350, true);
+      drive(-350);
+      delay(250);
+      drive(1300);
+
       /*
       drive(-400);
       turn(340, true);
@@ -335,7 +357,49 @@ void autonomous() {
     break;
     // SKILLS
     case 4:
-      // WORK ON LATER
+    intakeMotor.move(127);
+    indexerMotor.move(70);
+    drive(1200);
+    delay(500);
+    intakeMotor.move(0);
+    indexerMotor.move(0);
+    drive(-400);
+    turn(320, true);
+    drive(550);
+    turn(320);
+    intakeMotor.move(-127);
+    drive(-300);
+    leftFrontDriveMotor.move(60);
+    leftBackDriveMotor.move(60);
+    rightFrontDriveMotor.move(60);
+    rightBackDriveMotor.move(60);
+    delay(1500);
+    leftFrontDriveMotor.move(0);
+    leftBackDriveMotor.move(0);
+    rightFrontDriveMotor.move(0);
+    rightBackDriveMotor.move(0);
+    delay(250);
+    rFlywheel();
+    drive(-1410);
+    delay(250);
+    drive(300);
+    turn(320);
+    drive(2250);
+    intakeMotor.move(127);
+    indexerMotor.move(127);
+    leftFrontDriveMotor.move(100);
+    leftBackDriveMotor.move(100);
+    rightFrontDriveMotor.move(127);
+    rightBackDriveMotor.move(127);
+    delay(1500);
+    leftFrontDriveMotor.move(0);
+    leftBackDriveMotor.move(0);
+    rightFrontDriveMotor.move(0);
+    rightBackDriveMotor.move(0);
+    drive(-500);
+    turn(320, true);
+
+
     break;
     // DISABLE
     case 5:
