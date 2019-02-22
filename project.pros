@@ -248,6 +248,11 @@
                 "version": "3.3.12"
             }
         },
-        "upload_options": {}
+        "upload_options": {
+            "compress_bin": true,
+            "description": "Wireless upload test",
+            "remote_name": "Default",
+            "slot": 1
+        }
     }
 }
